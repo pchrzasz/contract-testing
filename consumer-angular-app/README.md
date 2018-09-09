@@ -10,11 +10,4 @@ run the tests. After the tests have successfully run the created pact file will 
 created in the folder `pacts`. 
 
 Then, you can call `npm run publish-pacts` to publish the pact files to a [Pact Broker](https://github.com/pact-foundation/pact_broker).
-You must set the following npm configs for the `publish-pacts` script to work:
-
-```
-npm config set angular-pact:brokerUrl <URL>
-npm config set angular-pact:brokerUsername <USER>
-npm config set angular-pact:brokerPassword <PASS>
-
-``` 
+Need to provide access details: host, user, password (publish-pacts.js).
