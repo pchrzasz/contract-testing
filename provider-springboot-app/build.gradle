@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springboot_version}"
+        classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:${springcloudcontract_version}"
+        classpath "org.springframework.cloud:spring-cloud-contract-spec-pact:${springcloudcontract_pact_version}"
+        classpath 'au.com.dius:pact-jvm-model:2.4.18'
+        classpath 'de.undercouch:gradle-download-task:3.4.3'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'spring-cloud-contract'
+apply plugin: 'maven-publish'
+apply plugin: 'de.undercouch.download'
+
+group = 'io.reflectoring'
+version = '1.0.0'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springcloud_version}"
+    }
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile('com.h2database:h2:1.4.196')
+    testCompile('org.codehaus.groovy:groovy-all:2.4.6')
+    testCompile("org.springframework.cloud:spring-cloud-starter-contract-verifier")
+    testCompile("org.springframework.cloud:spring-cloud-contract-spec:${springcloudcontract_pact_version}")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+task downloadFile(type: Download) {
+    src 'https://pawelchrzaszczewski.pact.dius.com.au/pacts/provider/userservice/consumer/ui/latest'
+    dest new File('src/test/resources/contracts/userservice', 'pactContract.json')
+    overwrite true
+    username 'VpbbV82mi8DL8Dw9SbOOlpuxF4NJc0'
+    password 'sXSEuvhHpRH1S9aVDUZrTdmt4XQ7Z'
+}
+
+contracts {
+    baseClassMappings {
+        baseClassMapping(".*userservice.*", "io.reflectoring.UserServiceBase")
+    }
+}
+
+clean.doFirst {
+    delete "${rootDir}/src/test/resources/contracts/userservice/pactContract.json"
+    println "Removed pact contract: ${rootDir}/src/test/resources/contracts/userservice/pactContract.json"
+}
+
+compileJava.dependsOn downloadFile

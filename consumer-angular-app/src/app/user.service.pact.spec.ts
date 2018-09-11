@@ -74,7 +74,7 @@ describe('UserService', () => {
               id: createdUserId
           }),
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json;charset=UTF-8'
           }
         }
       }).then(done, error => done.fail(error));
